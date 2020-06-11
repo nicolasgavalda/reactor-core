@@ -102,6 +102,12 @@ final class FluxWindow<T> extends InternalFluxOperator<T, Flux<T>> {
 		}
 	}
 
+	@Override
+	public Object scanUnsafe(Attr key) {
+		if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
+		return super.scanUnsafe(key);
+	}
+
 	static final class WindowExactSubscriber<T>
 			implements Disposable, InnerOperator<T, Flux<T>> {
 
@@ -249,6 +255,7 @@ final class FluxWindow<T> extends InternalFluxOperator<T, Flux<T>> {
 			if (key == Attr.CANCELLED) return cancelled == 1;
 			if (key == Attr.CAPACITY) return size;
 			if (key == Attr.TERMINATED) return done;
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
 
 			return InnerOperator.super.scanUnsafe(key);
 		}
@@ -438,6 +445,7 @@ final class FluxWindow<T> extends InternalFluxOperator<T, Flux<T>> {
 			if (key == Attr.CANCELLED) return cancelled == 1;
 			if (key == Attr.CAPACITY) return size;
 			if (key == Attr.TERMINATED) return done;
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
 
 			return InnerOperator.super.scanUnsafe(key);
 		}
@@ -734,6 +742,7 @@ final class FluxWindow<T> extends InternalFluxOperator<T, Flux<T>> {
 			}
 			if (key == Attr.ERROR) return error;
 			if (key == Attr.REQUESTED_FROM_DOWNSTREAM) return requested;
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
 
 			return InnerOperator.super.scanUnsafe(key);
 		}
