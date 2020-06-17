@@ -29,10 +29,8 @@ import reactor.core.CoreSubscriber;
 import reactor.core.Disposable;
 import reactor.core.Fuseable;
 import reactor.core.Scannable;
-import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 import reactor.test.publisher.FluxOperatorTest;
-import reactor.test.publisher.TestPublisher;
 import reactor.test.subscriber.AssertSubscriber;
 import reactor.util.concurrent.Queues;
 import reactor.util.context.Context;
@@ -283,6 +281,15 @@ public class FluxPublishMulticastTest extends FluxOperatorTest<String, String> {
         assertThat(Flux.just(Flux.just(1).hide().publish(v -> v)).flatMap(v -> v).blockLast()).isEqualTo(1);
     }
 
+    @Test
+    public void scanOperator(){
+    	Flux<Integer> parent = Flux.just(1);
+		FluxPublishMulticast test = new FluxPublishMulticast(parent, v -> v, 123, Queues::one);
+
+		assertThat(test.scan(Scannable.Attr.PARENT)).isSameAs(parent);
+    	assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
+    }
+
 	@Test
     public void scanMulticaster() {
         FluxPublishMulticast.FluxPublishMulticaster<Integer> test =
@@ -292,6 +299,7 @@ public class FluxPublishMulticastTest extends FluxOperatorTest<String, String> {
 
         assertThat(test.scan(Scannable.Attr.PARENT)).isSameAs(parent);
         assertThat(test.scan(Scannable.Attr.PREFETCH)).isEqualTo(123);
+        assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
         assertThat(test.scan(Scannable.Attr.BUFFERED)).isEqualTo(0);
         test.queue.add(1);
         assertThat(test.scan(Scannable.Attr.BUFFERED)).isEqualTo(1);
@@ -338,6 +346,7 @@ public class FluxPublishMulticastTest extends FluxOperatorTest<String, String> {
 
         assertThat(test.scan(Scannable.Attr.PARENT)).isSameAs(sub);
         assertThat(test.scan(Scannable.Attr.ACTUAL)).isSameAs(actual);
+        assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
     }
 
 	@Test
@@ -352,6 +361,7 @@ public class FluxPublishMulticastTest extends FluxOperatorTest<String, String> {
 
         assertThat(test.scan(Scannable.Attr.PARENT)).isSameAs(sub);
         assertThat(test.scan(Scannable.Attr.ACTUAL)).isSameAs(actual);
+        assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
     }
 
     @Test
